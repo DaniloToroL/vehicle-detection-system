@@ -32,8 +32,14 @@ class ObjectTracker:
             max_age=config.tracker.max_age,
             n_init=config.tracker.n_init,
             max_iou_distance=config.tracker.max_iou_distance,
+
+            max_cosine_distance=0.4, # More lenient visual matching (default is usually 0.2)
+
+
             embedder="mobilenet",  # Using MobileNet for feature extraction
             embedder_gpu=False  # Set to True if you have GPU
+
+
         )
         # Store trajectories: {track_id: [centroid1, centroid2, ...]}
         self.trajectories: Dict[int, List[Tuple[float, float]]] = defaultdict(list)

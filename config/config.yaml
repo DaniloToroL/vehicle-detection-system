@@ -3,14 +3,14 @@
 # Model Settings
 model:
   name: "yolo11n.pt"  # Options: yolo11n.pt, yolo11s.pt, yolo11m.pt, yolo11l.pt, yolo11x.pt
-  confidence_threshold: 0.5
+  confidence_threshold: 0.3
   iou_threshold: 0.45
   classes: [2, 3, 5, 7, 0]  # COCO classes: 2=car, 3=motorcycle, 5=bus, 7=truck, 0=person
   device: "cpu"  # "cuda" or "cpu"
 
 # Tracking Settings
 tracker:
-  max_age: 30        # Maximum number of frames to keep a lost track alive
+  max_age: 60        # Maximum number of frames to keep a lost track alive
   n_init: 3          # Number of consecutive detections to start a track
   max_iou_distance: 0.7 # Maximum IOU distance for association
 
