@@ -1,5 +1,6 @@
 from deep_sort_realtime.deepsort_tracker import DeepSort
 import numpy as np
+import cv2
 from typing import List, Tuple, Dict
 from dataclasses import dataclass, field
 from collections import defaultdict
@@ -33,11 +34,11 @@ class ObjectTracker:
             n_init=config.tracker.n_init,
             max_iou_distance=config.tracker.max_iou_distance,
 
-            max_cosine_distance=0.4, # More lenient visual matching (default is usually 0.2)
+            #max_cosine_distance=0.5, # More lenient visual matching (default is usually 0.2)
 
 
             embedder="mobilenet",  # Using MobileNet for feature extraction
-            embedder_gpu=False  # Set to True if you have GPU
+            embedder_gpu=True  # Set to True if you have GPU
 
 
         )
@@ -60,6 +61,7 @@ class ObjectTracker:
         Returns:
             List of TrackedObject objects with unique IDs
         """
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # Convert detections to DeepSORT format
         # DeepSORT expects: ([bbox], confidence, class_name)
         raw_detections = []
@@ -71,11 +73,11 @@ class ObjectTracker:
             raw_detections.append((
                 [x1, y1, w, h],
                 det.confidence,
-                det.class_name
+                "vehicle"
             ))
         
         # Update tracker with frame for feature extraction
-        tracks = self.tracker.update_tracks(raw_detections, frame=frame)
+        tracks = self.tracker.update_tracks(raw_detections, frame=frame_rgb)
         
         tracked_objects = []
         for track in tracks:
@@ -102,10 +104,12 @@ class ObjectTracker:
                 self.trajectories[track_id] = self.trajectories[track_id][-30:]
             
             # Get class information from the original detection
-            class_name = track.get_det_class() if hasattr(track, 'get_det_class') else "unknown"
+            #class_name = track.get_det_class() if hasattr(track, 'get_det_class') else "unknown"
+            class_name = "vehicle"
             # Map class name to class_id (simplified mapping)
-            class_id_map = {"car": 2, "motorcycle": 3, "bus": 5, "truck": 7, "person": 0}
-            class_id = class_id_map.get(class_name, 0)
+            #class_id_map = {"car": 2, "motorcycle": 3, "bus": 5, "truck": 7, "person": 0}
+            #class_id = class_id_map.get(class_name, 0)
+            class_id = 2
             
             tracked_objects.append(TrackedObject(
                 track_id=track_id,
