@@ -58,8 +58,13 @@ class ObjectDetector:
         """
         # Run inference on specified device (GPU/CPU)
         # verbose=False suppresses the default printing to stdout
-        results = self.model(frame, verbose=False, conf=self.conf_threshold, device=self.device)[0]
-        
+        results = self.model(
+            frame, 
+            verbose=False, 
+            conf=self.conf_threshold, 
+            device=self.device,
+            iou=self.config.model.iou_threshold)[0]
+
         detections = []
         
         # Process results

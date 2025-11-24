@@ -34,7 +34,7 @@ class ObjectTracker:
             n_init=config.tracker.n_init,
             max_iou_distance=config.tracker.max_iou_distance,
 
-            #max_cosine_distance=0.5, # More lenient visual matching (default is usually 0.2)
+            max_cosine_distance=2.0, # More lenient visual matching (default is usually 0.2)
 
 
             embedder="mobilenet",  # Using MobileNet for feature extraction
@@ -83,7 +83,12 @@ class ObjectTracker:
         for track in tracks:
             if not track.is_confirmed():
                 continue
-                
+
+            # time_since_update > 1 means the tracker is "coasting" (guessing).
+            # We SKIP these tracks so you only see real, detected cars.
+            if track.time_since_update > 1:
+                continue
+
             track_id = track.track_id
             ltrb = track.to_ltrb()  # [left, top, right, bottom]
             
